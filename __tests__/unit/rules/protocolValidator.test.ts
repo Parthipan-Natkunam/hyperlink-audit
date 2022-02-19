@@ -10,9 +10,15 @@ describe("Protocol Mismatch Rules", () => {
     });
 
     it("should return specific protocol for a valid url", () => {
-      expect(protocolValidator.getProtocol("http://www.mysite.org")).toEqual("http");
-      expect(protocolValidator.getProtocol("https://www.test.org/team/page/1/")).toEqual("https");
-      expect(protocolValidator.getProtocol("ws://12ertwkxnpewo.test.io")).toEqual("ws");
+      expect(protocolValidator.getProtocol("http://www.mysite.org")).toEqual(
+        "http"
+      );
+      expect(
+        protocolValidator.getProtocol("https://www.test.org/team/page/1/")
+      ).toEqual("https");
+      expect(
+        protocolValidator.getProtocol("ws://12ertwkxnpewo.test.io")
+      ).toEqual("ws");
     });
   });
 });
