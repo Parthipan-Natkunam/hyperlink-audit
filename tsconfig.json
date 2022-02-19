@@ -1,15 +1,20 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "module": "commonjs",
+    "module": "es2020",
+    "baseUrl": "./",
     "outDir": "./dist",
-    "rootDir": "./src",
     "strict": true,
     "allowJs": true,
     "checkJs": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "paths": {
+      "@rules/*": ["./src/server/rules/*"]
+    },
+    "plugins": [{ "transform": "typescript-transform-paths" }]
   },
+
   "exclude": ["./node_modules", "./dist"]
 }
