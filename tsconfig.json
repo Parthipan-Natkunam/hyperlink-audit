@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "module": "es2020",
+    "module": "commonjs",
     "baseUrl": "./",
     "outDir": "./dist",
     "strict": true,
@@ -11,7 +11,9 @@
     "esModuleInterop": true,
     "noImplicitAny": true,
     "paths": {
-      "@rules/*": ["./src/server/rules/*"]
+      "@rules/*": ["./src/server/rules/*"],
+      "@scrapper/*": ["./src/scrapper/*"],
+      "@cache/*": ["./src/cache/*"]
     },
     "plugins": [{ "transform": "typescript-transform-paths" }]
   },

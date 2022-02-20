@@ -1,5 +1,5 @@
 export type Protocol = "http" | "https";
-export type IssueCode = "MIXED" | "INSECURE" | "NOISSUE";
+export type IssueCode = "MIXED" | "INSECURE" | "NOISSUE" | "NOLINKS";
 
 type HyperlinkMeta = {
   link: string;
@@ -44,6 +44,8 @@ const addDetectedHyperlink = (payload: ProtocolInfo) => {
   });
 };
 
+const resetHyperlinkMap = () => detectedhyperlinks.clear();
+
 const getLinkCounts = (protocol: Protocol) =>
   detectedhyperlinks.get(protocol)?.count ?? 0;
 
@@ -58,37 +60,48 @@ const checkHasMultipleProtocols = () =>
 const checkHasOnlyNonSecureProtocol = () =>
   getLinkCounts("http") > 0 && getLinkCounts("https") === 0;
 
+const checkHasNoAnchors = () =>
+  getLinkCounts("http") === 0 && getLinkCounts("https") === 0;
+
 const getIssues = (): ProtocolIssue => {
-  if (checkHasMultipleProtocols()) {
-    return {
-      code: "MIXED",
-      message:
-        "The website has hyperlinks with mixed protocols (http, https). Hence it Might be vulnerable to https downgrade attacks",
-      secureProtocol: detectedhyperlinks.get("https")!,
-      insecureProtocol: detectedhyperlinks.get("http")!,
-    };
+  switch (true) {
+    case checkHasMultipleProtocols():
+      return {
+        code: "MIXED",
+        message:
+          "The webpage has hyperlinks with mixed protocols (http, https). Hence it Might be vulnerable to https downgrade attacks",
+        secureProtocol: detectedhyperlinks.get("https")!,
+        insecureProtocol: detectedhyperlinks.get("http")!,
+      };
+    case checkHasOnlyNonSecureProtocol():
+      return {
+        code: "INSECURE",
+        message:
+          "All detected hyperlinks on the page are served through insecure http. consider upgrading to https to prevent MITM attacks",
+        insecureProtocol: detectedhyperlinks.get("http")!,
+        secureProtocol: null,
+      };
+    case checkHasNoAnchors():
+      return {
+        code: "NOLINKS",
+        message:
+          "The page has no anchor tags. If there are hyperlinks on the page and buttons are used for that purpose, this page may result with a poor accessibility score",
+        insecureProtocol: null,
+        secureProtocol: null,
+      };
+    default:
+      return {
+        code: "NOISSUE",
+        message: "All the detected hyperlinks use the secure https protocol",
+        insecureProtocol: null,
+        secureProtocol: detectedhyperlinks.get("https")!,
+      };
   }
-
-  if (checkHasOnlyNonSecureProtocol()) {
-    return {
-      code: "INSECURE",
-      message:
-        "All detected hyperlinks on the site are served through insecure http. consider upgrading to https to prevent MITM attacks",
-      insecureProtocol: detectedhyperlinks.get("http")!,
-      secureProtocol: null,
-    };
-  }
-
-  return {
-    code: "NOISSUE",
-    message: "All the detected hyperlinks use the secured https protocol",
-    insecureProtocol: null,
-    secureProtocol: detectedhyperlinks.get("https")!,
-  };
 };
 
 export default Object.freeze({
   getProtocol,
   getIssues,
   addDetectedHyperlink,
+  resetHyperlinkMap,
 });

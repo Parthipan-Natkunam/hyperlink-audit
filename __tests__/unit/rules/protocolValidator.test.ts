@@ -1,4 +1,4 @@
-import protocolValidator from "@rules/protocolMismatch";
+import protocolValidator from "@rules/protocol";
 
 describe("Protocol Mismatch Rules", () => {
   describe("getProtocol", () => {
